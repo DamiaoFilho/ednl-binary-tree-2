@@ -128,50 +128,48 @@ int getLeafsCount(Node* root){
     return count;
 }
 
+void printTree(Node* current, int space){
+    if (current == nullptr){
+            return;
+    }
+ 
+    space += 5;
+ 
+    printTree(current->right, space);
+ 
+    cout << endl;
+    for (int i = 5; i < space; i++)
+        cout << " ";
+    cout << current->value << "\n";
+ 
+    printTree(current->left, space);
+
+}
+
 int main(){
     int node_count = 12;
 
-    // cout<<"Insert nodes quantity"<<"\n";
-    // cin>>node_count;
+    cout<<"Insert nodes quantity: ";
+    cin>>node_count;
 
-    // Node* nodes = new Node[node_count];
-    // for(int i=0; i<node_count; i++){
-    //     int value;
-
-    //     cout<<"Insert the "<<i+1<<" Node"<<endl;
-    //     cin>>value;
-
-    //     nodes[i].value = value;
-
-    //     if(i != 0 ){
-    //         insert(&nodes[0], &nodes[i]);
-    //     }
-    // }
-    
-    
-    Node* testing[] = {
-        new Node(100),
-        new Node(50),
-        new Node(200),
-        new Node(70),
-        new Node(140),
-        new Node(30),
-        new Node(350),
-        new Node(117),
-        new Node(400),
-        new Node(42),
-        new Node(80),
-        new Node(65),
-    };
-
+    Node* nodes = new Node[node_count];
     for(int i=0; i<node_count; i++){
+        int value;
+
+        cout<<"Insert "<<i+1<<" Node: ";
+        cin>>value;
+
+        nodes[i].value = value;
+
         if(i != 0 ){
-            insert(testing[0], testing[i]);
+            insert(&nodes[0], &nodes[i]);
         }
     }
+    
 
 
-    Node* findedNode = searchNode(testing[0], 140);
+
+    Node* findedNode = searchNode(&nodes[0], 140);
 
     if(findedNode != nullptr){
         cout<<"Node encontrado: "<<findedNode->value<<endl;
@@ -179,10 +177,10 @@ int main(){
         cout<<"Node não encontrado"<<endl;
     }
 
-    printNode(testing[0]);
+    printTree(&nodes[0], 0);
     cout<<endl;
 
-    cout<<"Quantidade de nos: "<<getNodeCount(testing[0])<<endl;
-    cout<<"Quantidade de folhas: "<<getLeafsCount(testing[0])<<endl;
+    cout<<"Quantidade de nos: "<<getNodeCount(&nodes[0])<<endl;
+    cout<<"Quantidade de folhas: "<<getLeafsCount(&nodes[0])<<endl;
 
 }
