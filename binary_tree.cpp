@@ -49,19 +49,7 @@ void insert(Node* root, Node* new_node){
     }
 }
 
-Node* searchNode(Node* current, int value) {
-    if (current == nullptr || current->value == value) {
-        return current;
-    }
-    if (value < current->value) {
-        return searchNode(current->left, value);
-    } else {
-        return searchNode(current->right, value);
-    }
-}
-
-
-void printNode(Node* root){
+void printByLevel(Node* root){
     if (root == nullptr) return;
 
     int aux = 0;
@@ -92,27 +80,18 @@ void printNode(Node* root){
     }
 }
 
-int getNodeCount(Node* current){
-    if (current == nullptr){
-        return 0;
-    }
-
-    int left = getNodeCount(current->left);
-    int right = getNodeCount(current->right);
-
-    return left + right + 1;
-}
-
-int getLeafsCount(Node* root){
-    if (root == nullptr) return 0;
-
+Node* findMin(Node* root){
     queue<Node*> q;
     q.push(root);
-    int count = 0;
+    Node* min = q.front();
 
     while (!q.empty()) {
         Node* current = q.front();
         q.pop();
+
+        if(current->value < min->value){
+            min = current;
+        }
 
         if (current->left != nullptr) {
             q.push(current->left);        
@@ -120,12 +99,62 @@ int getLeafsCount(Node* root){
         if (current->right != nullptr) {
             q.push(current->right);      
         }
-        if(current->left == nullptr && current->right == nullptr){
-            count++;
+    }
+
+    return min;
+}
+
+void remove_node(int remove_value, Node*& root){
+    Node* aux;
+
+    if(root == nullptr) return;
+
+    else if (remove_value < root->value) remove_node(remove_value, root->left);
+    else if (remove_value > root->value) remove_node(remove_value, root->right);
+
+    else if (root->left != nullptr && root->right != nullptr){
+        aux = findMin(root->right);
+        root->value = aux->value;
+        remove_node(root->value, root->right);
+    }else{
+        if (root->left != nullptr){
+            root = root->left;
+        }else{
+            root = root->right;
         }
     }
 
-    return count;
+}
+
+void printPreOrder(Node* current){
+    cout<<current->value<<" ";
+
+    if(current->left != nullptr){
+        printPreOrder(current->left);
+    }
+    if(current->right != nullptr){
+        printPreOrder(current->right);
+    }
+}
+
+void printSimetricOrder(Node* current){
+    if (current->left != nullptr){
+        printSimetricOrder(current->left);
+    }
+    cout<<current->value<<" ";
+    if (current->right != nullptr){
+        printSimetricOrder(current->right);
+    }
+}
+
+void printPostOrder(Node* current){
+    if (current->left != nullptr){
+        printSimetricOrder(current->left);
+    }
+    if (current->right != nullptr){
+        printSimetricOrder(current->right);
+    }
+    cout<<current->value<<" ";
 }
 
 void printTree(Node* current, int space){
@@ -146,41 +175,90 @@ void printTree(Node* current, int space){
 
 }
 
+
+void test(){
+    Node* nodes[] = {
+        new Node(8),
+        new Node(3),
+        new Node(11),
+        new Node(1),
+        new Node(5),
+        new Node(9),
+        new Node(14),
+        new Node(6),
+        new Node(10),
+        new Node(12),
+        new Node(15),
+        new Node(7),
+        new Node(13),
+    };
+
+    for(int i=0; i<13; i++){
+        insert(nodes[0], nodes[i]);
+    }
+}
+
+
 int main(){
-    int node_count = 12;
 
-    cout<<"Insert nodes quantity: ";
-    cin>>node_count;
+    int op = 1;
+    int node_count;
 
-    Node* nodes = new Node[node_count];
-    for(int i=0; i<node_count; i++){
-        int value;
+    cout<<"--Welcome to binary tree printer--"<<endl;
+    Node** nodes = nullptr;
 
-        cout<<"Insert "<<i+1<<" Node: ";
-        cin>>value;
+    while( op != 8 ){
+        switch (op)
+        {
+        case 1:
+            cout<<"Type nodes quantity: ";
+            cin>>node_count;
 
-        nodes[i].value = value;
+            nodes = new Node*[node_count];
 
-        if(i != 0 ){
-            insert(&nodes[0], &nodes[i]);
+            for (int i=0; i<node_count; i++){
+                cout<<"Type node "<<i+1<<" value: ";
+                nodes[i] = new Node();
+                cin >> nodes[i]->value;
+                insert(nodes[0], nodes[i]);
+            }
+            break;
+
+        case 2:
+            printPreOrder(nodes[0]);
+            cout<<endl<<endl;
+            break;
+
+        case 3:
+            printSimetricOrder(nodes[0]);
+            cout<<endl<<endl;
+            break;
+
+        case 4:
+            printPostOrder(nodes[0]);
+            cout<<endl<<endl;
+            break;
+
+        case 5:
+            printByLevel(nodes[0]);
+            cout<<endl<<endl;
+            break;
+
+        case 6:
+            cout<<"Type value to be removed: ";
+            int value;
+            cin>>value;
+            remove_node(value, nodes[0]);
+            break;
+
+        case 7:
+            printTree(nodes[0], 0);
+            cout<<endl;
+            break;
         }
+
+        cout<<"What would you like to do?"<<endl;
+        cout<<"1 - Create new tree\n2 - Print Pre Order\n3 - Print Simetric Order\n4 - Print Post Order\n5 - Print by Level\n6 - Remove a Node\n7 - Print Tree\n8 - Quit"<<endl;
+        cin>>op;
     }
-    
-
-
-
-    Node* findedNode = searchNode(&nodes[0], 140);
-
-    if(findedNode != nullptr){
-        cout<<"Node encontrado: "<<findedNode->value<<endl;
-    }else{
-        cout<<"Node não encontrado"<<endl;
-    }
-
-    printTree(&nodes[0], 0);
-    cout<<endl;
-
-    cout<<"Quantidade de nos: "<<getNodeCount(&nodes[0])<<endl;
-    cout<<"Quantidade de folhas: "<<getLeafsCount(&nodes[0])<<endl;
-
 }
